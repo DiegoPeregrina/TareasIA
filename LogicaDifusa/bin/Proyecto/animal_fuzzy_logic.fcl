@@ -1,0 +1,52 @@
+FUNCTION_BLOCK animal_classification
+
+VAR_INPUT
+    tamano : REAL;
+    peso : REAL;
+    velocidad : REAL;
+    pelo : REAL;
+END_VAR
+
+VAR_OUTPUT
+    especie : REAL;
+END_VAR
+
+FUZZIFY tamano
+    TERM pequeno := (0, 1) (20, 0);
+    TERM mediano := (10, 0) (30, 1) (50, 0);
+    TERM grande := (40, 0) (100, 1);
+END_FUZZIFY
+
+FUZZIFY peso
+    TERM ligero := (0, 1) (10, 0);
+    TERM medio := (5, 0) (25, 1) (50, 0);
+    TERM pesado := (40, 0) (150, 1);
+    TERM superpesado := (80, 0) (250, 1);
+END_FUZZIFY
+
+FUZZIFY velocidad
+    TERM lento := (0, 1) (10, 0);
+    TERM medio := (5, 0) (22.5, 1) (40, 0);
+    TERM rapido := (30, 0) (80, 1);
+END_FUZZIFY
+
+DEFUZZIFY especie
+    TERM gato := (0, 1) (0.4, 0);
+    TERM perro := (0.3, 0) (0.7, 1) (1, 0);
+    TERM gorila := (0.6, 0) (1, 1);
+    TERM canguro := (0.8, 0) (1, 1);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK rules
+    AND : MIN;
+    ACT : MIN;
+
+    RULE 1 : IF tamano IS pequeno AND peso IS ligero AND velocidad IS lento  THEN especie IS gato;
+    RULE 2 : IF tamano IS mediano AND peso IS medio AND velocidad IS medio  THEN especie IS perro;
+    RULE 3 : IF tamano IS grande AND peso IS superpesado AND velocidad IS lento  THEN especie IS gorila;
+    RULE 4 : IF tamano IS grande AND peso IS pesado AND velocidad IS rapido THEN especie IS canguro;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK

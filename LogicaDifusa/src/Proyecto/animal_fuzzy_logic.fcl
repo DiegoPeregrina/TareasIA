@@ -1,0 +1,48 @@
+FUNCTION_BLOCK animal_classification
+
+VAR_INPUT
+    altura : REAL;
+    peso : REAL;
+    velocidad : REAL;
+END_VAR
+
+VAR_OUTPUT
+    especie : REAL;
+END_VAR
+
+FUZZIFY altura
+    TERM pequeno := (0,0) (0,1) (60,0);
+    TERM mediano := (0,0) (30,0.5) (60,1) (90,0.5) (120,0);
+    TERM grande :=  (60,0) (120,1) (120,0);
+END_FUZZIFY
+
+FUZZIFY peso
+    TERM ligero :=  (0,0) (0,1) (60,0);
+    TERM medio :=  (30,0) (60,1) (90,0);
+    TERM pesado :=  (60,0) (120,1) (120,0);
+END_FUZZIFY
+
+FUZZIFY velocidad
+    TERM lento :=  (29,0) (29,1) (42,1) (55,0);
+    TERM medio :=  (29,0) (42,0.2) (55,1) (67,0.2) (101,0);
+    TERM rapido :=  (55,0) (101,1) (101,0);
+END_FUZZIFY
+
+DEFUZZIFY especie
+    TERM tortuga :=  (0,0) (25,1) (50,0);
+    TERM perro := (25,0) (50,1) (75,0);
+    TERM leon :=  (50,0) (75,1) (100,0);
+    METHOD : COG;
+    DEFAULT := 0;
+END_DEFUZZIFY
+
+RULEBLOCK rules
+    AND : MIN;
+    ACT : MIN;
+
+    RULE 1 : IF altura IS pequeno AND peso IS ligero AND velocidad IS lento THEN especie IS tortuga;
+    RULE 2 : IF altura IS mediano AND peso IS medio AND velocidad IS medio THEN especie IS perro;
+    RULE 3 : IF altura IS grande AND peso IS pesado AND velocidad IS rapido THEN especie IS leon;
+END_RULEBLOCK
+
+END_FUNCTION_BLOCK
